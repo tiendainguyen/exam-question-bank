@@ -29,11 +29,11 @@ export async function uploadIllustrative(file: File, name?: string): Promise<Exa
   return data.data
 }
 
-export type ExtractionMethod = 'HEURISTIC' | 'AI'
+export type ExtractionMethod = 'TESSERACT' | 'AI_VISION'
 
 export async function extractExam(
   examId: string,
-  method: ExtractionMethod = 'HEURISTIC',
+  method: ExtractionMethod = 'TESSERACT',
 ): Promise<ExtractionResponse> {
   const { data } = await api.post<{ data: ExtractionResponse }>(
     `/exams/${examId}/extract`,

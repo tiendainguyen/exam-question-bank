@@ -23,14 +23,14 @@ class ExtractionAuditLoggerTest {
         UUID user = UUID.randomUUID();
         UUID exam = UUID.randomUUID();
 
-        logger.logExtractionAsync(user, exam, ExtractionMethod.AI, 42);
+        logger.logExtractionAsync(user, exam, ExtractionMethod.AI_VISION, 42);
 
         ArgumentCaptor<ExtractionLog> captor = ArgumentCaptor.forClass(ExtractionLog.class);
         verify(repository).save(captor.capture());
         ExtractionLog row = captor.getValue();
         assertThat(row.getUserId()).isEqualTo(user);
         assertThat(row.getExamPaperId()).isEqualTo(exam);
-        assertThat(row.getMethod()).isEqualTo(ExtractionMethod.AI);
+        assertThat(row.getMethod()).isEqualTo(ExtractionMethod.AI_VISION);
         assertThat(row.getQuestionCount()).isEqualTo(42);
         assertThat(row.getId()).isNotNull();
         assertThat(row.getCreatedAt()).isNotNull();
@@ -41,7 +41,7 @@ class ExtractionAuditLoggerTest {
         doThrow(new RuntimeException("db down")).when(repository).save(any());
 
         assertThatCode(() -> logger.logExtractionAsync(
-                UUID.randomUUID(), UUID.randomUUID(), ExtractionMethod.HEURISTIC, 1))
+                UUID.randomUUID(), UUID.randomUUID(), ExtractionMethod.TESSERACT, 1))
                 .doesNotThrowAnyException();
     }
 }
