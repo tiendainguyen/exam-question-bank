@@ -2,7 +2,9 @@ package com.exambank.common;
 
 import java.net.URI;
 
+import com.exambank.common.exception.DocumentProcessingException;
 import com.exambank.common.exception.EmailAlreadyUsedException;
+import com.exambank.common.exception.ExamNotFoundException;
 import com.exambank.common.exception.InvalidCredentialsException;
 
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException.class)
     public ProblemDetail handleInvalidCredentials(InvalidCredentialsException ex) {
         return problem(HttpStatus.UNAUTHORIZED, "Invalid credentials", ex.getMessage());
+    }
+
+    @ExceptionHandler(ExamNotFoundException.class)
+    public ProblemDetail handleExamNotFound(ExamNotFoundException ex) {
+        return problem(HttpStatus.NOT_FOUND, "Exam not found", ex.getMessage());
+    }
+
+    @ExceptionHandler(DocumentProcessingException.class)
+    public ProblemDetail handleDocumentProcessing(DocumentProcessingException ex) {
+        return problem(HttpStatus.UNPROCESSABLE_ENTITY, "Document processing failed", ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
