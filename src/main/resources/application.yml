@@ -4,7 +4,7 @@ spring:
 
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/exambank}
-    username: ${DB_USERNAME:exambank}
+    username: ${DB_USER:exambank}
     password: ${DB_PASSWORD:exambank}
 
   jpa:
@@ -19,6 +19,28 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+    # Tolerate a pre-existing non-empty schema (e.g. pgvector objects on a
+    # managed DB). baseline-version 0 keeps V1 in scope so it still runs —
+    # the default (1) would skip V1 and never create app_user.
+    baseline-on-migrate: true
+    baseline-version: 0
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+  ai:
+    openai:
+      # OpenAI-compatible endpoint. Default = Groq (free tier, no card).
+      # Override AI_BASE_URL/AI_MODEL for OpenAI, Gemini, OpenRouter, etc.
+      # Empty key by default so the app boots; AI extraction fails only when
+      # invoked without a key (heuristic extraction needs nothing).
+      api-key: ${AI_API_KEY:}
+      base-url: ${AI_BASE_URL:https://api.groq.com/openai/v1}
+      chat:
+        options:
+          model: ${AI_MODEL:llama-3.3-70b-versatile}
 
   # Virtual threads OFF — ThreadLocal-based per-user context relies on
   # platform-thread scoping (see UserContext). Re-evaluate per task that
@@ -31,6 +53,9 @@ server:
   port: ${SERVER_PORT:8080}
 
 app:
+  storage:
+    # Local filesystem dir for uploaded exam PDFs ({examId}.pdf).
+    exam-dir: ${EXAM_STORAGE_DIR:./data/exams}
   jwt:
     # Override in every non-dev environment via APP_JWT_SECRET (>= 32 bytes for HS256).
     secret: ${APP_JWT_SECRET:dev-only-insecure-secret-change-me-0123456789abcdef}

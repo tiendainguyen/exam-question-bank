@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import DashboardPage from './pages/DashboardPage'
+import UploadExamPage from './pages/UploadExamPage'
 import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
@@ -14,6 +15,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/exams/upload"
+        element={
+          <ProtectedRoute>
+            <UploadExamPage />
           </ProtectedRoute>
         }
       />

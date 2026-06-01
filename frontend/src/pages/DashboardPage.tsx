@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuthStore } from '../store/auth'
 
@@ -33,11 +33,19 @@ export default function DashboardPage() {
           </button>
         </div>
         {me ? (
-          <div className="space-y-1 text-gray-700">
-            <p>
-              Signed in as <span className="font-medium">{me.email}</span>
-            </p>
-            <p className="text-sm text-gray-500">User ID: {me.userId}</p>
+          <div className="space-y-4 text-gray-700">
+            <div className="space-y-1">
+              <p>
+                Signed in as <span className="font-medium">{me.email}</span>
+              </p>
+              <p className="text-sm text-gray-500">User ID: {me.userId}</p>
+            </div>
+            <Link
+              to="/exams/upload"
+              className="inline-block rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+            >
+              Upload illustrative exam
+            </Link>
           </div>
         ) : (
           <p className="text-gray-500">Loading…</p>

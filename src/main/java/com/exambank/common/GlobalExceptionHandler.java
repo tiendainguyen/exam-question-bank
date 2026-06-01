@@ -2,8 +2,11 @@ package com.exambank.common;
 
 import java.net.URI;
 
+import com.exambank.common.exception.DocumentProcessingException;
 import com.exambank.common.exception.EmailAlreadyUsedException;
+import com.exambank.common.exception.ExamNotFoundException;
 import com.exambank.common.exception.InvalidCredentialsException;
+import com.exambank.common.exception.UnsupportedExamFormatException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -26,6 +29,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException.class)
     public ProblemDetail handleInvalidCredentials(InvalidCredentialsException ex) {
         return problem(HttpStatus.UNAUTHORIZED, "Invalid credentials", ex.getMessage());
+    }
+
+    @ExceptionHandler(ExamNotFoundException.class)
+    public ProblemDetail handleExamNotFound(ExamNotFoundException ex) {
+        return problem(HttpStatus.NOT_FOUND, "Exam not found", ex.getMessage());
+    }
+
+    @ExceptionHandler(DocumentProcessingException.class)
+    public ProblemDetail handleDocumentProcessing(DocumentProcessingException ex) {
+        return problem(HttpStatus.UNPROCESSABLE_ENTITY, "Document processing failed", ex.getMessage());
+    }
+
+    @ExceptionHandler(UnsupportedExamFormatException.class)
+    public ProblemDetail handleUnsupportedFormat(UnsupportedExamFormatException ex) {
+        ProblemDetail pd = problem(HttpStatus.UNPROCESSABLE_ENTITY, "Unsupported exam format", ex.getMessage());
+        // Hint for the UI: offer to retry the extraction with AI.
+        pd.setProperty("retryWithAi", true);
+        return pd;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

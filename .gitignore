@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### App ###
+# dotenv (spring-dotenv) — holds secrets, never commit
+.env
+.env.*
+!.env.example
+# uploaded exam PDFs (local storage)
+/data/
