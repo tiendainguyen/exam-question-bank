@@ -7,7 +7,7 @@ CREATE TABLE extraction_log (
     id             UUID         PRIMARY KEY,
     user_id        UUID         NOT NULL,          -- who clicked extract
     exam_paper_id  UUID         NOT NULL,          -- which exam
-    method         VARCHAR(16)  NOT NULL,          -- HEURISTIC | AI
+    method         VARCHAR(16)  NOT NULL,          -- TESSERACT | AI_VISION
     question_count INT          NOT NULL,          -- questions produced
     created_at     TIMESTAMPTZ  NOT NULL DEFAULT now()
 );

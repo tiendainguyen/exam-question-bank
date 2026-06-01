@@ -34,8 +34,10 @@ spring:
     openai:
       # OpenAI-compatible endpoint. Default = Groq (free tier, no card).
       # Override AI_BASE_URL/AI_MODEL for OpenAI, Gemini, OpenRouter, etc.
-      # Empty key by default so the app boots; AI extraction fails only when
-      # invoked without a key (heuristic extraction needs nothing).
+      # Empty key by default so the app boots; AI_VISION extraction fails only
+      # when invoked without a key. NOTE: AI_VISION needs a *vision-capable*
+      # model (the default text model below cannot see images) — set AI_MODEL
+      # to e.g. a Groq vision model / gpt-4o / a Claude vision model.
       api-key: ${AI_API_KEY:}
       base-url: ${AI_BASE_URL:https://api.groq.com/openai/v1}
       chat:
@@ -56,6 +58,15 @@ app:
   storage:
     # Local filesystem dir for uploaded exam PDFs ({examId}.pdf).
     exam-dir: ${EXAM_STORAGE_DIR:./data/exams}
+  ocr:
+    # OCR for scanned PDFs (no text layer). render-dpi: higher = better OCR
+    # accuracy but bigger images / more vision tokens. tessdata-path empty →
+    # tess4j uses the TESSDATA_PREFIX env var. text-layer-min-chars: below this
+    # many extracted chars, TESSERACT treats the PDF as a scan and OCRs it.
+    render-dpi: ${OCR_RENDER_DPI:200}
+    language: ${OCR_LANGUAGE:vie+eng}
+    tessdata-path: ${TESSDATA_PATH:}
+    text-layer-min-chars: ${OCR_TEXT_LAYER_MIN_CHARS:40}
   jwt:
     # Override in every non-dev environment via APP_JWT_SECRET (>= 32 bytes for HS256).
     secret: ${APP_JWT_SECRET:dev-only-insecure-secret-change-me-0123456789abcdef}
@@ -69,6 +80,6 @@ management:
 
 logging:
   level:
-    # Step-by-step extraction trace (extract:start → read-pdf → split → parsed → done).
+    # Step-by-step extraction trace (extract:start → read-pdf → ocr → split → done).
     # Drop to INFO to silence the per-step debug lines.
     com.exambank.exam: ${EXTRACT_LOG_LEVEL:DEBUG}

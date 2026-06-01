@@ -10,7 +10,7 @@ import {
 export default function UploadExamPage() {
   const [file, setFile] = useState<File | null>(null)
   const [name, setName] = useState('')
-  const [method, setMethod] = useState<ExtractionMethod>('HEURISTIC')
+  const [method, setMethod] = useState<ExtractionMethod>('TESSERACT')
   const [examId, setExamId] = useState<string | null>(null)
   const [status, setStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -24,15 +24,15 @@ export default function UploadExamPage() {
     setQuestions(null)
     setBusy(true)
     try {
-      setStatus(m === 'AI' ? 'Trích xuất bằng AI…' : 'Trích xuất (heuristic)…')
+      setStatus(m === 'AI_VISION' ? 'Trích xuất bằng AI Vision…' : 'OCR bằng Tesseract…')
       const result = await extractExam(id, m)
       setQuestions(result.questions)
-      setStatus(`Đã trích ${result.questionCount} câu (${m === 'AI' ? 'AI' : 'heuristic'}).`)
+      setStatus(`Đã trích ${result.questionCount} câu (${m === 'AI_VISION' ? 'AI Vision' : 'Tesseract'}).`)
     } catch (err: unknown) {
       const res = (err as { response?: { status?: number; data?: { detail?: string; retryWithAi?: boolean } } })?.response
       setStatus(null)
       if (res?.status === 422 && res.data?.retryWithAi) {
-        setError('Định dạng file không chuẩn nên không tách tự động được. Bạn có thể thử lại bằng AI detection.')
+        setError('OCR Tesseract không tách được câu hỏi. Bạn có thể thử lại bằng AI Vision.')
         setCanRetryWithAi(true)
       } else {
         setError(res?.data?.detail ?? 'Trích xuất thất bại.')
@@ -93,31 +93,31 @@ export default function UploadExamPage() {
           </label>
 
           <fieldset className="space-y-2">
-            <legend className="mb-1 text-sm font-medium text-gray-700">Cách trích xuất</legend>
+            <legend className="mb-1 text-sm font-medium text-gray-700">Cách trích xuất (OCR)</legend>
             <label className="flex items-start gap-2">
               <input
                 type="radio"
                 name="method"
-                checked={method === 'HEURISTIC'}
-                onChange={() => setMethod('HEURISTIC')}
+                checked={method === 'TESSERACT'}
+                onChange={() => setMethod('TESSERACT')}
                 className="mt-1"
               />
               <span className="text-sm">
-                <span className="font-medium">Heuristic (miễn phí)</span> — tách bằng quy tắc, không tốn AI.
-                Hợp với đề định dạng chuẩn.
+                <span className="font-medium">Tesseract (miễn phí)</span> — OCR bằng thư viện, chạy offline.
+                Ưu tiên lớp text có sẵn, tự OCR khi là đề scan.
               </span>
             </label>
             <label className="flex items-start gap-2">
               <input
                 type="radio"
                 name="method"
-                checked={method === 'AI'}
-                onChange={() => setMethod('AI')}
+                checked={method === 'AI_VISION'}
+                onChange={() => setMethod('AI_VISION')}
                 className="mt-1"
               />
               <span className="text-sm">
-                <span className="font-medium">AI</span> — dùng mô hình ngôn ngữ, chịu được đề định dạng lạ
-                (cần API key).
+                <span className="font-medium">AI Vision</span> — mô hình thị giác đọc ảnh trang, chịu được
+                layout phức tạp (cần model có vision).
               </span>
             </label>
           </fieldset>
@@ -129,12 +129,12 @@ export default function UploadExamPage() {
               type="button"
               disabled={busy}
               onClick={() => {
-                setMethod('AI')
-                runExtraction(examId, 'AI')
+                setMethod('AI_VISION')
+                runExtraction(examId, 'AI_VISION')
               }}
               className="rounded-md bg-amber-600 px-4 py-2 text-white hover:bg-amber-700 disabled:opacity-50"
             >
-              Thử lại bằng AI
+              Thử lại bằng AI Vision
             </button>
           )}
 
