@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16   # Postgres 16 with the pgvector extension preinstalled
+    container_name: exambank-postgres
+    environment:
+      POSTGRES_DB: exambank
+      POSTGRES_USER: exambank
+      POSTGRES_PASSWORD: exambank
+    ports:
+      - "5432:5432"
+    volumes:
+      - exambank-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U exambank -d exambank"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  adminer:
+    image: adminer:4
+    container_name: exambank-adminer
+    ports:
+      - "8081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  exambank-pgdata:
