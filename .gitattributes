@@ -1,2 +1,11 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
+
+# Stable LF for checksum-/parser-sensitive sources. Flyway hashes migration
+# file bytes, so CRLF/LF drift between Windows and CI breaks validation.
+*.sql  text eol=lf
+*.java text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.ts   text eol=lf
+*.tsx  text eol=lf

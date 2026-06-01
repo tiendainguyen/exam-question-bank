@@ -49,8 +49,10 @@ public class ExamController {
     }
 
     @PostMapping("/{id}/extract")
-    public ApiResponse<ExtractionResponse> extract(@PathVariable UUID id) {
-        List<Question> questions = extractionService.extract(id);
+    public ApiResponse<ExtractionResponse> extract(
+            @PathVariable UUID id,
+            @RequestParam(defaultValue = "HEURISTIC") ExtractionMethod method) {
+        List<Question> questions = extractionService.extract(id, method);
         List<QuestionResponse> dtos = questions.stream().map(QuestionResponse::from).toList();
         return ApiResponse.ok(new ExtractionResponse(id, dtos.size(), dtos));
     }

@@ -105,10 +105,12 @@
 			<version>4.0.0</version>
 		</dependency>
 
-		<!-- LLM structured extraction (B1) -->
+		<!-- LLM structured extraction (B1). OpenAI-compatible client so any
+		     OpenAI-API-shaped provider works (Groq/OpenAI/Gemini/OpenRouter)
+		     via base-url config — lets the "AI" option run on a free model. -->
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-starter-model-anthropic</artifactId>
+			<artifactId>spring-ai-starter-model-openai</artifactId>
 		</dependency>
 
 		<!-- PDF text extraction (B1) -->

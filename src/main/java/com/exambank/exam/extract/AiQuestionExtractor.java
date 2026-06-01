@@ -45,13 +45,16 @@ public class AiQuestionExtractor implements QuestionExtractor {
                 .map(b -> "Câu " + b.ordinal() + ": " + b.text())
                 .collect(Collectors.joining("\n\n"));
 
-        ExtractedExam result = builder.build()
-                .prompt()
-                .system(SYSTEM)
-                .user(userText)
-                .call()
-                .entity(ExtractedExam.class);
-
-        return result == null ? List.of() : result.questions();
+        try {
+            ExtractedExam result = builder.build()
+                    .prompt()
+                    .system(SYSTEM)
+                    .user(userText)
+                    .call()
+                    .entity(ExtractedExam.class);
+            return result == null ? List.of() : result.questions();
+        } catch (RuntimeException e) {
+            throw new DocumentProcessingException("AI extraction failed: " + e.getMessage(), e);
+        }
     }
 }

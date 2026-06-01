@@ -4,7 +4,7 @@ spring:
 
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/exambank}
-    username: ${DB_USERNAME:exambank}
+    username: ${DB_USER:exambank}
     password: ${DB_PASSWORD:exambank}
 
   jpa:
@@ -19,6 +19,11 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+    # Tolerate a pre-existing non-empty schema (e.g. pgvector objects on a
+    # managed DB). baseline-version 0 keeps V1 in scope so it still runs —
+    # the default (1) would skip V1 and never create app_user.
+    baseline-on-migrate: true
+    baseline-version: 0
 
   servlet:
     multipart:
@@ -26,13 +31,16 @@ spring:
       max-request-size: 20MB
 
   ai:
-    anthropic:
-      # Empty by default so the app boots without a key (extraction fails only
-      # when invoked). Set ANTHROPIC_API_KEY to enable LLM extraction.
-      api-key: ${ANTHROPIC_API_KEY:}
+    openai:
+      # OpenAI-compatible endpoint. Default = Groq (free tier, no card).
+      # Override AI_BASE_URL/AI_MODEL for OpenAI, Gemini, OpenRouter, etc.
+      # Empty key by default so the app boots; AI extraction fails only when
+      # invoked without a key (heuristic extraction needs nothing).
+      api-key: ${AI_API_KEY:}
+      base-url: ${AI_BASE_URL:https://api.groq.com/openai/v1}
       chat:
         options:
-          model: ${ANTHROPIC_MODEL:claude-3-5-sonnet-latest}
+          model: ${AI_MODEL:llama-3.3-70b-versatile}
 
   # Virtual threads OFF — ThreadLocal-based per-user context relies on
   # platform-thread scoping (see UserContext). Re-evaluate per task that
