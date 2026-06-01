@@ -28,6 +28,20 @@ class HeuristicQuestionExtractorTest {
     }
 
     @Test
+    void parsesEnglishQuestionMarker() {
+        List<QuestionBlock> blocks = List.of(
+                new QuestionBlock(7, "Question 7: I like this song.\nA. although B. because C. despite D. so"));
+
+        List<ExtractedQuestion> questions = extractor.extract(blocks);
+
+        assertThat(questions).hasSize(1);
+        ExtractedQuestion q = questions.get(0);
+        assertThat(q.ordinal()).isEqualTo(7);
+        assertThat(q.stem()).isEqualTo("I like this song.");
+        assertThat(q.choices()).containsExactly("although", "because", "despite", "so");
+    }
+
+    @Test
     void throwsWhenNoChoicesParseable() {
         List<QuestionBlock> blocks = List.of(
                 new QuestionBlock(1, "Câu 1: a prompt with no options at all"));

@@ -10,14 +10,15 @@ import com.exambank.common.exception.UnsupportedExamFormatException;
 import org.springframework.stereotype.Component;
 
 /**
- * Free, deterministic extractor. Strips the "Câu N" marker, then parses A/B/C/D
- * choices via regex. Throws {@link UnsupportedExamFormatException} when the file
- * has no markers or no parseable choices — the caller can then retry with AI.
+ * Free, deterministic extractor. Strips the question marker (Câu N / Question N
+ * / Bài N), then parses A/B/C/D choices via regex. Throws
+ * {@link UnsupportedExamFormatException} when the file has no markers or no
+ * parseable choices — the caller can then retry with AI vision.
  */
 @Component
 public class HeuristicQuestionExtractor implements QuestionExtractor {
 
-    private static final Pattern MARKER = Pattern.compile("(?iu)^\\s*c[aâ]u\\s+\\d+\\s*[.:)]?\\s*");
+    private static final Pattern MARKER = Pattern.compile("(?iu)^\\s*(?:c[aâ]u|question|b[aà]i)\\s+\\d+\\s*[.:)]?\\s*");
     private static final Pattern CHOICE = Pattern.compile("(?m)(?:^|\\s)([A-D])[.)]\\s+");
 
     @Override

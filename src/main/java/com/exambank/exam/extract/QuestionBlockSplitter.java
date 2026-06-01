@@ -8,15 +8,16 @@ import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 
 /**
- * Splits raw exam text into per-question blocks on "Câu N" markers
- * (case- and diacritic-tolerant). Deterministic — no LLM. Each block keeps its
- * marker line so the downstream extractor sees full context.
+ * Splits raw exam text into per-question blocks on question markers — "Câu N",
+ * "Question N", or "Bài N" (case- and diacritic-tolerant). Deterministic — no
+ * LLM. Each block keeps its marker line so the downstream extractor sees full
+ * context.
  */
 @Component
 public class QuestionBlockSplitter {
 
     private static final Pattern MARKER = Pattern.compile(
-            "(?imu)^[ \\t]*c[aâ]u[ \\t]+(\\d+)[ \\t]*[.:)]?");
+            "(?imu)^[ \\t]*(?:c[aâ]u|question|b[aà]i)[ \\t]+(\\d+)[ \\t]*[.:)]?");
 
     public List<QuestionBlock> split(String text) {
         if (text == null || text.isBlank()) {
