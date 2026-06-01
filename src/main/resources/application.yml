@@ -66,3 +66,9 @@ management:
     web:
       exposure:
         include: health,info
+
+logging:
+  level:
+    # Step-by-step extraction trace (extract:start → read-pdf → split → parsed → done).
+    # Drop to INFO to silence the per-step debug lines.
+    com.exambank.exam: ${EXTRACT_LOG_LEVEL:DEBUG}
