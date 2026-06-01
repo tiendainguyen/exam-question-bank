@@ -39,3 +39,4 @@ build/
 !.env.example
 # uploaded exam PDFs (local storage)
 /data/
+/minio/

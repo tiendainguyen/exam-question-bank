@@ -35,6 +35,21 @@ class QuestionBlockSplitterTest {
     }
 
     @Test
+    void splitsOnQuestionAndBaiMarkers() {
+        String text = """
+                Question 1: Choose the answer.
+                A. a  B. b
+                Question 2: Next one.
+                Bài 3. Một câu hỏi.
+                """;
+
+        List<QuestionBlock> blocks = splitter.split(text);
+
+        assertThat(blocks).extracting(QuestionBlock::ordinal).containsExactly(1, 2, 3);
+        assertThat(blocks.get(0).text()).startsWith("Question 1");
+    }
+
+    @Test
     void emptyOrNullYieldsNoBlocks() {
         assertThat(splitter.split("")).isEmpty();
         assertThat(splitter.split("   ")).isEmpty();
